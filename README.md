@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="utf-8">
@@ -236,7 +235,7 @@ const ON=['#153825','#153825','#F0EADC','#153825'];
    впиши сюда адрес своей базы Firebase Realtime Database, например:
    const SYNC_URL = "https://fair-choice-default-rtdb.europe-west1.firebasedatabase.app";
    Пусто — используется встроенное хранилище Claude (работает не везде).      */
-const SYNC_URL = "https://console.firebase.google.com/u/0/project/menti-meter-fair-choice/database/menti-meter-fair-choice-default-rtdb/data/~2F";
+const SYNC_URL = "https://menti-meter-fair-choice-default-rtdb.europe-west1.firebasedatabase.app/";
 
 const mem={};
 const hasStore = typeof window!=='undefined' && window.storage && typeof window.storage.list==='function';
