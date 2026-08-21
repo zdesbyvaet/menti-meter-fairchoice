@@ -121,13 +121,18 @@ input,textarea{font-family:var(--body);font-weight:400}
 
 .scalebox{padding-left:2px}
 .scalerow{margin-bottom:30px}
-.scalerow .st{font-size:clamp(15px,1.8vw,20px);margin-bottom:16px;line-height:1.35}
+.scalerow .st{font-size:clamp(15px,1.8vw,20px);margin-bottom:10px;line-height:1.35}
+.scalerow .stn{display:inline-block;margin-left:10px;font-family:var(--display);font-weight:900;font-size:12px;color:var(--soft)}
+svg.curve{display:block;width:100%;height:auto;overflow:visible}
 .track{position:relative;height:12px;background:rgba(21,56,36,.1);border-radius:99px}
 .marker{position:absolute;top:0;height:12px;width:22px;border-radius:99px;transform:translateX(-50%);transition:left .5s cubic-bezier(.4,0,.2,1)}
 .ends{display:flex;justify-content:space-between;color:var(--soft);font-family:var(--display);font-weight:900;font-size:13px;margin-top:20px;text-transform:lowercase}
 
-.rankrow{margin-bottom:15px}
-.rankrow .rl{font-size:15.5px;margin-bottom:6px}
+.rankrow{margin-bottom:14px}
+.rankrow .rl{display:flex;align-items:baseline;gap:12px;font-size:15.5px;margin-bottom:6px}
+.rankrow .rnum{font-family:var(--display);font-weight:900;color:var(--soft);min-width:18px}
+.rankrow .rtxt{flex:1}
+.rankrow .ravg{font-size:13px;color:var(--soft);white-space:nowrap}
 .rankrow .rt{height:13px;background:rgba(21,56,36,.1);border-radius:99px;overflow:hidden}
 .rankrow .rf{height:100%;border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
 
@@ -158,7 +163,7 @@ input[type=range]::-webkit-slider-runnable-track{height:12px;background:rgba(21,
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:var(--sky);margin-top:-9px;border:4px solid var(--surface);box-shadow:0 0 0 2px var(--green)}
 input[type=range]::-moz-range-track{height:12px;background:rgba(21,56,36,.1);border-radius:99px}
 input[type=range]::-moz-range-thumb{width:24px;height:24px;border:4px solid var(--surface);border-radius:50%;background:var(--sky);box-shadow:0 0 0 2px var(--green)}
-.endlbl{display:flex;justify-content:space-between;font-size:12.5px;color:var(--soft)}
+.endlbl{display:flex;justify-content:space-between;gap:12px;font-size:12px;line-height:1.3;color:var(--soft)}
 textarea.free{width:100%;border:2px solid var(--line);border-radius:13px;padding:14px;font-size:16px;min-height:120px;resize:vertical;background:var(--creme);color:var(--green)}
 input.word{width:100%;border:2px solid var(--line);border-radius:13px;padding:14px;font-size:16px;background:var(--creme);color:var(--green)}
 .counter{font-size:12.5px;color:var(--soft);text-align:right;margin:6px 0 12px}
@@ -235,7 +240,7 @@ const ON=['#153825','#153825','#F0EADC','#153825'];
    впиши сюда адрес своей базы Firebase Realtime Database, например:
    const SYNC_URL = "https://fair-choice-default-rtdb.europe-west1.firebasedatabase.app";
    Пусто — используется встроенное хранилище Claude (работает не везде).      */
-const SYNC_URL = "https://menti-meter-fair-choice-default-rtdb.europe-west1.firebasedatabase.app/";
+const SYNC_URL = "https://menti-meter-fair-choice-default-rtdb.europe-west1.firebasedatabase.app";
 
 const mem={};
 const hasStore = typeof window!=='undefined' && window.storage && typeof window.storage.list==='function';
@@ -343,7 +348,7 @@ function tally(q){
     list.forEach(a=>a.payload.split('-').forEach((v,pos)=>{ const i=parseInt(v,10); if(i>=0&&i<N) sc[i]+=(N-pos) })); return sc }
   if(q.type==='words'){ const m={};
     list.forEach(a=>{ const w=dec(a.payload).trim(); if(w) m[w]=(m[w]||0)+1 });
-    return Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,40) }
+    return Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,32) }
   return [];
 }
 function voteCount(rid){ return (St.votes['5']||[]).filter(v=>v.target===rid).length }
@@ -395,26 +400,59 @@ function renderMC(q){
     '<div class="legend">'+q.opts.map((o,i)=>
       '<div class="lrow"><span class="sw" style="background:'+PAL[i%4]+'"></span><span class="n">'+c[i]+'</span><span class="t">'+esc(o)+'</span></div>').join('')+'</div></div>';
 }
+function curve(arr,color){
+  const W=1000,H=118,base=H-10;
+  const track='<rect x="0" y="'+(base-6)+'" width="1000" height="12" rx="6" fill="rgba(21,56,36,.09)"/>';
+  if(!arr.length) return '<svg class="curve" viewBox="0 0 1000 118">'+track+'</svg>';
+  const h=Math.max(6.5,34/Math.sqrt(arr.length));
+  const pts=[]; let max=0;
+  for(let x=0;x<=100;x++){
+    let d=0;
+    for(const v of arr){ const z=(x-v)/h; d+=Math.exp(-0.5*z*z) }
+    pts.push(d); if(d>max) max=d;
+  }
+  let path='M 0 '+base;
+  pts.forEach((d,x)=>{ path+=' L '+(x*10).toFixed(1)+' '+(base-(d/max)*(base-16)).toFixed(1) });
+  path+=' L 1000 '+base+' Z';
+  const mean=arr.reduce((a,b)=>a+b,0)/arr.length;
+  return '<svg class="curve" viewBox="0 0 1000 118">'+track+
+    '<path d="'+path+'" fill="'+color+'" opacity=".92"/>'+
+    '<line x1="'+(mean*10).toFixed(1)+'" y1="8" x2="'+(mean*10).toFixed(1)+'" y2="'+(base+5)+
+      '" stroke="var(--green)" stroke-width="2.5" stroke-dasharray="6 6"/></svg>';
+}
 function renderScale(q){
-  const av=tally(q);
+  const list=St.answers[String(q.id)]||[];
+  const vals=q.stmts.map(()=>[]);
+  list.forEach(a=>a.payload.split('-').forEach((v,i)=>{
+    const x=parseInt(v,10); if(!isNaN(x)&&i<vals.length) vals[i].push(x);
+  }));
   return '<div class="scalebox">'+q.stmts.map((s,i)=>
-    '<div class="scalerow"><div class="st">'+esc(s)+'</div><div class="track">'+
-    (av[i]===null?'':'<div class="marker" style="left:'+Math.max(3,Math.min(97,av[i]))+'%;background:'+PAL[i%4]+'"></div>')+
-    '</div></div>').join('')+
+    '<div class="scalerow"><div class="st">'+esc(s)+
+      (vals[i].length?'<span class="stn">'+vals[i].length+'</span>':'')+'</div>'+
+      curve(vals[i],PAL[i%4])+'</div>').join('')+
     '<div class="ends"><span>безусловно не согласны</span><span>безусловно согласны</span></div></div>';
 }
 function renderRank(q){
-  const sc=tally(q),max=Math.max(1,...sc);
-  return '<div>'+q.items.map((it,i)=>
-    '<div class="rankrow"><div class="rl">'+esc(it)+'</div><div class="rt"><div class="rf" style="width:'+
-    (sc[i]/max*100)+'%;background:'+PAL[i%4]+'"></div></div></div>').join('')+'</div>';
+  const list=St.answers[String(q.id)]||[], N=q.items.length, sc=tally(q);
+  const avg=q.items.map((_,i)=>{
+    let s=0,n=0;
+    list.forEach(a=>{ const pos=a.payload.split('-').map(Number).indexOf(i); if(pos>=0){ s+=pos+1; n++ } });
+    return n? s/n : null;
+  });
+  const order=q.items.map((_,i)=>i).sort((a,b)=>sc[b]-sc[a]);
+  const max=Math.max(1,...sc);
+  return '<div>'+order.map((i,place)=>
+    '<div class="rankrow"><div class="rl"><span class="rnum">'+(place+1)+'</span>'+
+      '<span class="rtxt">'+esc(q.items[i])+'</span>'+
+      (avg[i]===null?'':'<span class="ravg">ср. место '+avg[i].toFixed(1).replace('.',',')+'</span>')+'</div>'+
+    '<div class="rt"><div class="rf" style="width:'+(sc[i]/max*100)+'%;background:'+PAL[place%4]+'"></div></div></div>').join('')+'</div>';
 }
 function renderWords(q){
   const w=tally(q);
   if(!w.length) return '<div class="empty">Ответы появятся здесь</div>';
   const max=w[0][1];
   return '<div class="cloud">'+w.map(([word,n],i)=>
-    '<span style="font-size:'+(26+Math.round((n/max)*46))+'px;color:'+PAL[i%4]+'">'+esc(word)+'</span>').join('')+'</div>';
+    '<span style="font-size:'+(22+Math.round(Math.sqrt(n/max)*58))+'px;color:'+PAL[i%4]+'" title="'+n+'">'+esc(word)+'</span>').join('')+'</div>';
 }
 function renderOpen(){
   if(!St.openKeys.length) return '<div class="empty">Ответы появятся здесь. До 200 знаков, можно отправить несколько</div>';
@@ -567,7 +605,7 @@ function joinBody(q){
     return q.stmts.map((s,i)=>
       '<div class="slider-block"><div class="st">'+esc(s)+'</div>'+
       '<input type="range" min="0" max="100" value="'+(vals[i]||50)+'" data-i="'+i+'" class="sl" id="sl'+i+'">'+
-      '<div class="endlbl"><span>не согласен</span><span>согласен</span></div></div>').join('')+
+      '<div class="endlbl"><span>безусловно<br>не согласны</span><span style="text-align:right">безусловно<br>согласны</span></div></div>').join('')+
       '<button class="btn" id="sendScale">'+(mine?'обновить ответ':'отправить')+'</button>'+
       (mine?'<div class="saved">ответ сохранён</div>':'');
   }
