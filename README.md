@@ -18,7 +18,7 @@
   --surface:#FFFFFF;
   --line:rgba(21,56,36,.16);
   --soft:rgba(21,56,36,.55);
-  --display:'TT Travels','TT Travels Text','Geologica',system-ui,sans-serif;
+  --display:'Unbounded','TT Travels','TT Travels Text','Geologica',system-ui,sans-serif;
   --body:'Geologica','Geologica',system-ui,sans-serif;
 }
 *{box-sizing:border-box}
