@@ -17,8 +17,8 @@
   --surface:#FFFFFF;
   --line:rgba(21,56,36,.16);
   --soft:rgba(21,56,36,.55);
-  --display:'TT Travels','TT Travels Text','Rubik',system-ui,sans-serif;
-  --body:'Geologica','Rubik',system-ui,sans-serif;
+  --display:'Geologica',system-ui,sans-serif;
+  --body:'Geologica',system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
