@@ -6,7 +6,7 @@
 <title>Menti-Meter — живая социология</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;600&family=Geologica:wght@500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;600&family=Rubik:wght@500;700;900&family=Unbounded:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
   --creme:#F0EADC;
@@ -18,8 +18,9 @@
   --surface:#FFFFFF;
   --line:rgba(21,56,36,.16);
   --soft:rgba(21,56,36,.55);
-  --display:'Unbounded','TT Travels','TT Travels Text','Geologica',system-ui,sans-serif;
-  --body:'Geologica','Geologica',system-ui,sans-serif;
+  --display:'TT Travels','TT Travels Text','Rubik',system-ui,sans-serif;
+  --lockup:'Unbounded','TT Travels','TT Travels Text',system-ui,sans-serif;
+  --body:'Geologica','Rubik',system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -39,8 +40,8 @@ input,textarea{font-family:var(--body);font-weight:400}
 /* ---------- home ---------- */
 .home{max-width:940px;margin:0 auto;padding:52px 22px 80px}
 .lockup{line-height:.85;margin:22px 0 18px}
-.lockup .w1{display:block;font-family:var(--display);font-weight:900;font-size:clamp(36px,6.6vw,66px);color:var(--sky)}
-.lockup .w2{display:block;font-family:var(--display);font-weight:900;font-size:clamp(30px,5.4vw,54px);color:var(--green)}
+.lockup .w1{display:block;font-family:var(--lockup);font-weight:900;font-size:clamp(30px,5.6vw,54px);color:var(--sky)}
+.lockup .w2{display:block;font-family:var(--lockup);font-weight:900;font-size:clamp(24px,4.4vw,42px);color:var(--green)}
 .home p.lead{font-size:17px;max-width:52ch;margin:0 0 38px;color:var(--green)}
 .homerow{display:grid;gap:16px;grid-template-columns:220px 1fr;align-items:stretch}
 @media(max-width:680px){.homerow{grid-template-columns:1fr}}
@@ -95,8 +96,8 @@ input,textarea{font-family:var(--body);font-weight:400}
 /* title slide */
 .title-slide{background:var(--creme);display:grid;grid-template-columns:1.15fr .85fr;gap:30px;align-items:center}
 .title-slide .tl{display:flex;flex-direction:column;height:100%;justify-content:center}
-.title-slide .lockup .w1{font-size:clamp(34px,5.6vw,64px)}
-.title-slide .lockup .w2{font-size:clamp(27px,4.4vw,50px)}
+.title-slide .lockup .w1{font-size:clamp(28px,4.8vw,52px)}
+.title-slide .lockup .w2{font-size:clamp(22px,3.8vw,40px)}
 .title-slide .sub{font-size:clamp(15px,1.7vw,20px);max-width:28ch;margin-top:14px}
 .title-slide .foot{margin-top:26px;font-family:var(--display);font-weight:900;font-size:15px;color:var(--sky)}
 .title-slide img.mascot{width:100%;max-width:380px;height:auto;justify-self:center;display:block}
